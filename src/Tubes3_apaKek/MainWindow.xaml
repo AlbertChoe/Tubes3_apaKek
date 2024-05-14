@@ -1,0 +1,34 @@
+﻿<Window x:Class="Tubes3_apaKek.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tubes3_apaKek"
+        mc:Ignorable="d"
+        Title="Fingerprint Analysis System" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Fingerprint Analysis System" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button Content="Insert Fingerprint Image" Margin="10" Click="OnInsertImage"/>
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <RadioButton Content="KMP Algorithm" GroupName="Algorithms" IsChecked="True"/>
+                <RadioButton Content="BM Algorithm" GroupName="Algorithms" Margin="20,0,0,0"/>
+            </StackPanel>
+            <Button Content="Search" Margin="10" Click="OnSearch"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center">
+            <Image Source="{Binding Path=InputImagePath}" Height="100" Margin="10"/>
+            <TextBlock Text="{Binding Path=ExecutionTime}" Margin="10"/>
+            <TextBlock Text="{Binding Path=SimilarityPercentage}" Margin="10"/>
+            <ListBox ItemsSource="{Binding Path=BiodataResults}" DisplayMemberPath="Detail" Margin="10"/>
+        </StackPanel>
+    </Grid>
+</Window>

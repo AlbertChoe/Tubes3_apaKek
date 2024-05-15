@@ -25,8 +25,8 @@
                 <TextBlock Text="Sidik Jari Cocok" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
             <StackPanel Orientation="Horizontal" Margin="10">
-                <Button Content="BM" Margin="5" Width="50" Click="OnSelectBM"/>
-                <Button Content="KMP" Margin="5" Width="50" Click="OnSelectKMP"/>
+                <RadioButton Content="BM" GroupName="Algorithms" Margin="5" Width="50" IsChecked="True" Checked="OnSelectBM"/>
+                <RadioButton Content="KMP" GroupName="Algorithms" Margin="5" Width="50" Checked="OnSelectKMP"/>
                 <Button Content="Search" Margin="5" Width="75" Click="OnSearch"/>
             </StackPanel>
         </StackPanel>

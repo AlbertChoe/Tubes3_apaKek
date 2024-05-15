@@ -23,6 +23,7 @@ namespace Tubes3_apaKek
         private BitmapImage _inputImage;
         private string _executionTime;
         private string _similarityPercentage;
+        private string _selectedAlgorithm = "BM";
 
         public BitmapImage InputImage
         {
@@ -73,6 +74,19 @@ namespace Tubes3_apaKek
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public string SelectedAlgorithm
+        {
+            get => _selectedAlgorithm;
+            set
+            {
+                if (_selectedAlgorithm != value)
+                {
+                    _selectedAlgorithm = value;
+                    OnPropertyChanged(nameof(SelectedAlgorithm));
+                }
+            }
+        }
+
         private void OnInsertImage(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog
@@ -99,15 +113,20 @@ namespace Tubes3_apaKek
 
         private void OnSelectBM(object sender, RoutedEventArgs e)
         {
-            // Set the algorithm to BM (Boyer-Moore)
-            // You might store this choice in a variable or directly use it in the OnSearch method
+            if (((RadioButton)sender).IsChecked == true)
+            {
+                SelectedAlgorithm = "BM";
+            }
         }
 
         private void OnSelectKMP(object sender, RoutedEventArgs e)
         {
-            // Set the algorithm to KMP (Knuth-Morris-Pratt)
-            // Similarly, store or use this choice as needed
+            if (((RadioButton)sender).IsChecked == true)
+            {
+                SelectedAlgorithm = "KMP";
+            }
         }
+
 
         private void OnSearch(object sender, RoutedEventArgs e)
         {
@@ -120,9 +139,10 @@ namespace Tubes3_apaKek
 
             stopwatch.Stop();
 
-            // Update the UI with mock results
-            ExecutionTime = $"Waktu Pencarian: {stopwatch.ElapsedMilliseconds} ms";
+            // Update the UI with mock results and include the selected algorithm in the output
+            ExecutionTime = $"Waktu Pencarian: {stopwatch.ElapsedMilliseconds} ms using {SelectedAlgorithm}";
             SimilarityPercentage = "Persentase Kecocokkan: 72%";
         }
+
     }
 }

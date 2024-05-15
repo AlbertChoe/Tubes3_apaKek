@@ -5,30 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tubes3_apaKek"
         mc:Ignorable="d"
-        Title="Fingerprint Analysis System" Height="600" Width="800">
+        Title="Fingerprint Analysis System" Height="750" Width="1250">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <TextBlock Text="Fingerprint Analysis System" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
-
-        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
-            <Button Content="Insert Fingerprint Image" Margin="10" Click="OnInsertImage"/>
-            <StackPanel Orientation="Horizontal" Margin="10">
-                <RadioButton Content="KMP Algorithm" GroupName="Algorithms" IsChecked="True"/>
-                <RadioButton Content="BM Algorithm" GroupName="Algorithms" Margin="20,0,0,0"/>
-            </StackPanel>
-            <Button Content="Search" Margin="10" Click="OnSearch"/>
+        <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border BorderBrush="Gray" BorderThickness="1" Height="400" Width="300">
+                <Image x:Name="inputImageControl" Source="{Binding InputImage}" Stretch="Fill" />
+            </Border>
+            <Button Content="Pilih Citra" Margin="10" Width="100" Click="OnInsertImage"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center">
-            <Image Source="{Binding Path=InputImagePath}" Height="100" Margin="10"/>
-            <TextBlock Text="{Binding Path=ExecutionTime}" Margin="10"/>
-            <TextBlock Text="{Binding Path=SimilarityPercentage}" Margin="10"/>
-            <ListBox ItemsSource="{Binding Path=BiodataResults}" DisplayMemberPath="Detail" Margin="10"/>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border BorderBrush="Gray" BorderThickness="1" Height="400" Width="300">
+                <TextBlock Text="Sidik Jari Cocok" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <Button Content="BM" Margin="5" Width="50" Click="OnSelectBM"/>
+                <Button Content="KMP" Margin="5" Width="50" Click="OnSelectKMP"/>
+                <Button Content="Search" Margin="5" Width="75" Click="OnSearch"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border BorderBrush="Gray" BorderThickness="1" Height="400" Width="300">
+                <ListBox ItemsSource="{Binding Path=BiodataResults}" DisplayMemberPath="Detail"/>
+            </Border>
+            <StackPanel Orientation="Vertical" Margin="10">
+                <!-- Bind TextBlock text to properties in the DataContext -->
+                <TextBlock Text="{Binding ExecutionTime}"/>
+                <TextBlock Text="{Binding SimilarityPercentage}"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

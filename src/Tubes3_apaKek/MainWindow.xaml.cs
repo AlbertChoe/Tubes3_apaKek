@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tubes3_apaKek.DataAccess;
 
 
 namespace Tubes3_apaKek
@@ -65,6 +66,19 @@ namespace Tubes3_apaKek
         {
             InitializeComponent();
             DataContext = this;
+            TestDatabaseConnection();
+        }
+
+        private void TestDatabaseConnection()
+        {
+            try
+            {
+                Database.TestConnection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error connecting to the database: " + ex.Message);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

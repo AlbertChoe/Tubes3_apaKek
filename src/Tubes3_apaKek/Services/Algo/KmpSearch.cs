@@ -1,4 +1,8 @@
-public static class KMPSearcher
+
+using System.Windows;
+
+namespace Services.Algo{
+    public static class KMPSearcher
 {
     public static int KMPSearch(string pattern, string text)
     {
@@ -39,7 +43,6 @@ public static class KMPSearcher
                 }
             }
         }
-
         return result;
     }
 
@@ -73,4 +76,6 @@ public static class KMPSearcher
     }
 
 }
+}
+
 

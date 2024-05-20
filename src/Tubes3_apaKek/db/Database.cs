@@ -1,8 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
+using Services.Tools;
 using System;
 using System.Configuration;
 using System.Windows; // Tambahkan ini
 using Tubes3_apaKek.Models;
+using System.IO;
 
 namespace Tubes3_apaKek.DataAccess
 {
@@ -118,36 +120,35 @@ namespace Tubes3_apaKek.DataAccess
 
         public static Biodata GetBiodataByAlayName(string alayName)
         {
-            Biodata biodata = null;
+            string matchedName = null;
+
             using (var connection = GetConnection())
             {
                 try
                 {
                     connection.Open();
-                    var query = "SELECT * FROM biodata WHERE nama = @AlayName";
+                    var query = "SELECT nama FROM biodata";
                     using (var command = new MySqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@AlayName", alayName);
                         using (var reader = command.ExecuteReader())
                         {
-                            if (reader.Read())
+                            while (reader.Read())
                             {
-                                biodata = new Biodata
+                                string realName = reader["nama"].ToString();
+                                File.WriteAllText("new.txt", realName);
+                                if (AlayChecker.IsAlayMatch(alayName, realName))
                                 {
-                                    NIK = reader["NIK"].ToString(),
-                                    Nama = reader["nama"].ToString(),
-                                    TempatLahir = reader["tempat_lahir"].ToString(),
-                                    TanggalLahir = Convert.ToDateTime(reader["tanggal_lahir"]),
-                                    JenisKelamin = reader["jenis_kelamin"].ToString(),
-                                    GolonganDarah = reader["golongan_darah"].ToString(),
-                                    Alamat = reader["alamat"].ToString(),
-                                    Agama = reader["agama"].ToString(),
-                                    StatusPerkawinan = reader["status_perkawinan"].ToString(),
-                                    Pekerjaan = reader["pekerjaan"].ToString(),
-                                    Kewarganegaraan = reader["kewarganegaraan"].ToString()
-                                };
+                                    File.WriteAllText("new1.txt", realName);
+                                    matchedName = realName;
+                                    break;
+                                }
                             }
                         }
+                    }
+
+                    if (matchedName != null)
+                    {
+                        return GetBiodataByName(matchedName, connection);
                     }
                 }
                 catch (MySqlException ex)
@@ -155,6 +156,40 @@ namespace Tubes3_apaKek.DataAccess
                     MessageBox.Show("Failed to retrieve biodata: " + ex.Message);
                 }
             }
+
+            return null;
+        }
+
+        private static Biodata GetBiodataByName(string name, MySqlConnection connection)
+        {
+            Biodata biodata = null;
+            var query = "SELECT * FROM biodata WHERE nama = @Name";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Name", name);
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        biodata = new Biodata
+                        {
+                            NIK = reader["NIK"].ToString(),
+                            Nama = reader["nama"].ToString(),
+                            TempatLahir = reader["tempat_lahir"].ToString(),
+                            TanggalLahir = Convert.ToDateTime(reader["tanggal_lahir"]),
+                            JenisKelamin = reader["jenis_kelamin"].ToString(),
+                            GolonganDarah = reader["golongan_darah"].ToString(),
+                            Alamat = reader["alamat"].ToString(),
+                            Agama = reader["agama"].ToString(),
+                            StatusPerkawinan = reader["status_perkawinan"].ToString(),
+                            Pekerjaan = reader["pekerjaan"].ToString(),
+                            Kewarganegaraan = reader["kewarganegaraan"].ToString()
+                        };
+                    }
+                }
+            }
+
             return biodata;
         }
 

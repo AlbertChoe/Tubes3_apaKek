@@ -302,7 +302,7 @@
                 </TransformGroup>
             </StackPanel.RenderTransform>
             <Border BorderBrush="Gray" BorderThickness="1">
-                <ListBox ItemsSource="{Binding BiodataResults}" DisplayMemberPath="Detail" Width="302" Height="398"/>
+                <TextBlock Text="{Binding BiodataResults}" Foreground="White" FontSize="16" Margin="10"/>
             </Border>
             <StackPanel Orientation="Vertical" Height="80">
                 <!-- Bind TextBlock text to properties in the DataContext -->

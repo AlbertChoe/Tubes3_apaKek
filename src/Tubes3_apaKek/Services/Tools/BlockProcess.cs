@@ -1,6 +1,8 @@
 // SEMENTARA JANGAN PAKE INI DULU
 // INI MASIH SALAH, PERBANDINGAN YANG DISPEK BUKAN GNI KEKNYA
-public static class BlockProcessor
+using Services.Algo;
+namespace Services.Tools{
+    public static class BlockProcessor
 {
     public static string[] DivideIntoBlocks(string asciiText, int blockSize)
     {
@@ -28,4 +30,5 @@ public static class BlockProcessor
         }
         return -1;
     }
+}
 }

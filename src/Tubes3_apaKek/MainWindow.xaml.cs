@@ -12,6 +12,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Tubes3_apaKek.DataAccess;
+using Services;
+using Tubes3_apaKek.Models;
+using System.IO;
 
 
 namespace Tubes3_apaKek
@@ -25,7 +28,7 @@ namespace Tubes3_apaKek
         private string _executionTime;
         private string _similarityPercentage;
         private string _selectedAlgorithm = "KMP";
-
+        private string _biodataResults;
         public BitmapImage InputImage
         {
             get => _inputImage;
@@ -49,6 +52,15 @@ namespace Tubes3_apaKek
             }
         }
 
+        public string BiodataResults
+        {
+            get { return _biodataResults; }
+            set
+            {
+                _biodataResults = value;
+                OnPropertyChanged("BiodataResults");
+            }
+        }
         public string SimilarityPercentage
         {
             get => _similarityPercentage;
@@ -66,7 +78,7 @@ namespace Tubes3_apaKek
         {
             InitializeComponent();
             DataContext = this;
-            TestDatabaseFunctions();
+            // TestDatabaseFunctions();
         }
 
 
@@ -74,12 +86,14 @@ namespace Tubes3_apaKek
         {
             // Test untuk mendapatkan semua path dari sidik jari
             var paths = Database.GetAllFingerprintPaths();
-            MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n"+"Paths:\n" + string.Join("\n", paths));
+            // File.WriteAllText("pat.txt", paths[0]);
+            MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Paths:\n" + string.Join("\n", paths));
 
             // Test untuk mendapatkan nama asli berdasarkan path
             if (paths.Count > 0)
             {
                 var realName = Database.GetRealNameByPath(paths[0]); // mengasumsikan paths tidak kosong
+
                 MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Real Name for " + paths[0] + ":\n" + realName);
             }
 
@@ -120,8 +134,8 @@ namespace Tubes3_apaKek
         {
             OpenFileDialog dlg = new OpenFileDialog
             {
-                DefaultExt = ".png",
-                Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png"
+                DefaultExt = ".bmp",
+                Filter = "BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*"
             };
 
             bool? result = dlg.ShowDialog();
@@ -131,7 +145,16 @@ namespace Tubes3_apaKek
                 try
                 {
                     var uri = new Uri(dlg.FileName);
-                    InputImage = new BitmapImage(uri);
+                    BitmapImage bitmap = new BitmapImage();
+
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the image is fully loaded
+                    bitmap.UriSource = uri;
+                    bitmap.EndInit();
+                    bitmap.Freeze(); // Make the BitmapImage thread-safe
+
+                    InputImage = bitmap;
+                    this._inputImage = bitmap;
                 }
                 catch (Exception ex)
                 {
@@ -139,6 +162,7 @@ namespace Tubes3_apaKek
                 }
             }
         }
+
 
         private void OnSelectBM(object sender, RoutedEventArgs e)
         {
@@ -159,30 +183,32 @@ namespace Tubes3_apaKek
 
         private void OnSearch(object sender, RoutedEventArgs e)
         {
-            // Simulate a search operation
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
 
-            // Simulate the time taken for searching (mock delay)
-            System.Threading.Thread.Sleep(20); // Simulate processing time
+            ResultData result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
 
-            stopwatch.Stop();
-
-            // Update the UI with mock results and include the selected algorithm in the output
-            ExecutionTime = $"Waktu Pencarian: {stopwatch.ElapsedMilliseconds} ms using {SelectedAlgorithm}";
-            SimilarityPercentage = "Persentase Kecocokkan: 72%";
+            if (result != null)
+            {
+                Biodata biodata = result.biodata;
+                BiodataResults = $"Nama: {biodata.Nama}\nNIK: {biodata.NIK}\nTempat Lahir: {biodata.TempatLahir}\nTanggal Lahir: {biodata.TanggalLahir.ToShortDateString()}\nJenis Kelamin: {biodata.JenisKelamin}\nGolongan Darah: {biodata.GolonganDarah}\nAlamat: {biodata.Alamat}\nAgama: {biodata.Agama}\nStatus Perkawinan: {biodata.StatusPerkawinan}\nPekerjaan: {biodata.Pekerjaan}\nKewarganegaraan: {biodata.Kewarganegaraan}";
+                ExecutionTime = $"Waktu Pencarian: {result.execTime} ms \nAlgorithm: {result.algorithm}";
+                SimilarityPercentage = $"Persentase Kecocokan: {result.Similarity}%";
+            }
+            else
+            {
+                BiodataResults = "Not Found";
+            }
         }
 
         private void btnKMP_Click(object sender, RoutedEventArgs e)
         {
-            btnKMP.Background = new SolidColorBrush(Colors.Red);  
-            btnBM.Background = new SolidColorBrush(Colors.Gray);  
+            btnKMP.Background = new SolidColorBrush(Colors.Red);
+            btnBM.Background = new SolidColorBrush(Colors.Gray);
             SelectedAlgorithm = "KMP";
         }
 
         private void btnBM_Click(object sender, RoutedEventArgs e)
         {
-            btnBM.Background = new SolidColorBrush(Colors.Red); 
+            btnBM.Background = new SolidColorBrush(Colors.Red);
             btnKMP.Background = new SolidColorBrush(Colors.Gray);
             SelectedAlgorithm = "BM";
         }

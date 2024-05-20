@@ -1,4 +1,6 @@
-public static class BoyerMooreSearch{
+
+namespace Services.Algo{
+    public static class BoyerMooreSearch{
     public static int BMSearch(string pattern, string text){
         int n = text.Length;
         int m = pattern.Length;
@@ -26,7 +28,7 @@ public static class BoyerMooreSearch{
         return -1; 
      }
 
-     public static List<int> BMSearchAll(string pattern, string text)
+    public static List<int> BMSearchAll(string pattern, string text)
     {
         List<int> occurrences = new List<int>();
         int n = text.Length;
@@ -67,4 +69,5 @@ public static class BoyerMooreSearch{
         }
         return lastOccurrence;
     }
+}
 }

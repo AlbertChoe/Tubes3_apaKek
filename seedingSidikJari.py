@@ -16,7 +16,7 @@ def insert_sidik_jari(cursor, nama, sidik_jari_path):
 def process_files(directory):
     db_config = {
         'user': 'root',
-        'password': '',  # Ganti dengan password Anda
+        'password': '1234',  # Ganti dengan password Anda
         'host': '127.0.0.1',
         'database': 'tubes3',  # Sesuaikan dengan nama database Anda
     }
@@ -31,7 +31,7 @@ def process_files(directory):
 
     # Dictionary untuk menyimpan nama yang dihasilkan berdasarkan identifier
     name_dict = {}
-
+    base_path = "../../test/Real"
     for root, dirs, files in os.walk(directory):
         print(f"Checking directory: {root}")
         for filename in files:
@@ -42,7 +42,9 @@ def process_files(directory):
                     name_dict[identifier] = fake.name()
 
                 nama = name_dict[identifier]
-                sidik_jari_path = os.path.join(root, filename)
+                sidik_jari_path = os.path.join(base_path, filename)
+                sidik_jari_path = f"{sidik_jari_path.replace(os.sep, '/')}"
+                # print(sidik_jari_path)
                 insert_sidik_jari(cursor, nama, sidik_jari_path)
 
     db.commit()

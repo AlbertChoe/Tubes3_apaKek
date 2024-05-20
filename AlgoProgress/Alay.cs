@@ -1,55 +1,89 @@
-
-// YANG NANTI KITA PAKE MO YG RETURN KEK GNII APA BANDINGIN TERUS RETURN TRUE FALSE???
-// INI UBAH DAN RETURN NON ALAY
-// MASIH PERLU DI UBAH UBAH INI HARUSNYA
-public static class AlayTextConverter
+using System;
+using System.Text.RegularExpressions;
+using System.Linq;
+public class AlayChecker
 {
-    // Regex untuk mengganti angka dengan huruf yang sesuai
-    private static readonly Regex NumberToLetterRegex = new Regex("[a4@]|[e3]|[i1!]|[o0]|[s5]|[t7]|[g6]", RegexOptions.IgnoreCase);
-
-    // Regex untuk menangani kombinasi huruf besar dan kecil
-    private static readonly Regex MixedCaseRegex = new Regex("([a-z])([A-Z])", RegexOptions.IgnoreCase);
-
-    // Regex untuk menangani singkatan
-    private static readonly Regex AbbreviationRegex = new Regex(@"\bbntng\b|\bdw\b|\bmrthn\b|\bind\b|\bindon\b", RegexOptions.IgnoreCase);
-
-    public static string ConvertAlayToNormal(string alayText)
+    public static bool IsAlayMatch(string kataAlay, string kataAsli)
     {
-        // Langkah 1: Mengganti angka dengan huruf yang sesuai
-        alayText = NumberToLetterRegex.Replace(alayText, m =>
+        // Create a regex pattern from the original string
+        string pattern = BuildRegexPattern(kataAsli);
+
+        // Check if the entire kataAlay string matches the regex pattern
+        if (Regex.IsMatch(kataAlay, pattern, RegexOptions.IgnoreCase))
         {
-            return m.Value.ToLower() switch
-            {
-                "4" => "a",
-                "@" => "a",
-                "3" => "e",
-                "1" => "i",
-                "!" => "i",
-                "0" => "o",
-                "5" => "s",
-                "7" => "t",
-                "6" => "g",
-                _ => m.Value
-            };
-        });
+            return true;
+        }
 
-        // Langkah 2: Menangani kombinasi huruf besar dan kecil
-        alayText = alayText.ToLower(); // Menyederhanakan dengan mengubah semua huruf menjadi huruf kecil
-
-        // Langkah 3: Menangani singkatan
-        alayText = AbbreviationRegex.Replace(alayText, m =>
-        {
-            return m.Value switch
-            {
-                "bntng" => "bintang",
-                "dw" => "dwi",
-                "mrthn" => "marthen",
-                "ind" => "indonesia",
-                "indon" => "indonesia",
-                _ => m.Value
-            };
-        });
-
-        return alayText;
+        // You could fall back to the normalization logic if regex fails (optional)
+        return false;  // Or invoke another method here if necessary
     }
+
+    private static string BuildRegexPattern(string original)
+    {
+        var words = original.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var patternBuilder = new System.Text.StringBuilder("^");
+
+        foreach (string word in words)
+        {
+            AppendSpaceIfNeeded(patternBuilder);
+            AppendWordPattern(word, patternBuilder);
+        }
+
+        patternBuilder.Append("$");
+        return patternBuilder.ToString();
+    }
+
+    private static void AppendSpaceIfNeeded(System.Text.StringBuilder patternBuilder)
+    {
+        if (patternBuilder.Length > 1)
+            patternBuilder.Append("\\s*");
+    }
+
+    private static void AppendWordPattern(string word, System.Text.StringBuilder patternBuilder)
+    {
+        foreach (char ch in word)
+        {
+            string charPattern = GetCharPattern(ch);
+            patternBuilder.Append($"({charPattern})?");
+        }
+    }
+
+    private static string GetCharPattern(char ch)
+    {
+        if ("aeiouAEIOUgGtTsS".Contains(ch))
+        {
+            return ch switch
+            {
+                'a' or 'A' => "[aA4]",
+                'e' or 'E' => "[eE3]",
+                'i' or 'I' => "[iI1]",
+                'o' or 'O' => "[oO0]",
+                'u' or 'U' => "[uU]",
+                'g' or 'G' => "[gG6]",
+                's' or 'S' => "[sS5]",
+                't' or 'T' => "[tT7]",
+                _ => $"[{char.ToLower(ch)}{char.ToUpper(ch)}]"
+            };
+        }
+        return $"[{char.ToLower(ch)}{char.ToUpper(ch)}]";
+    }
+
+
+
+
 }
+
+// Penggunaan
+// class Program
+// {
+//     static void Main()
+//     {
+//         string kataAlay = "R.. Cl5t Sdt, S.S5";
+//         string kataAsli = "R.A. Calista Sudiati, S.Sos";
+//         // string kataAlay = "kh. pmN hRYNt, s.T.";
+//         // string kataAsli = "KH. Paiman Haryanto, S.T.";
+
+//         bool result = AlayChecker.IsAlayMatch(kataAlay, kataAsli);
+//         Console.WriteLine(result ? "True" : "False");  // Output harusnya "True"
+//     }
+// }

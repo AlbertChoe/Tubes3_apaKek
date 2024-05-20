@@ -24,7 +24,7 @@ namespace Tubes3_apaKek
         private BitmapImage _inputImage;
         private string _executionTime;
         private string _similarityPercentage;
-        private string _selectedAlgorithm = "BM";
+        private string _selectedAlgorithm = "KMP";
 
         public BitmapImage InputImage
         {
@@ -173,5 +173,18 @@ namespace Tubes3_apaKek
             SimilarityPercentage = "Persentase Kecocokkan: 72%";
         }
 
+        private void btnKMP_Click(object sender, RoutedEventArgs e)
+        {
+            btnKMP.Background = new SolidColorBrush(Colors.Red);  
+            btnBM.Background = new SolidColorBrush(Colors.Gray);  
+            SelectedAlgorithm = "KMP";
+        }
+
+        private void btnBM_Click(object sender, RoutedEventArgs e)
+        {
+            btnBM.Background = new SolidColorBrush(Colors.Red); 
+            btnKMP.Background = new SolidColorBrush(Colors.Gray);
+            SelectedAlgorithm = "BM";
+        }
     }
 }

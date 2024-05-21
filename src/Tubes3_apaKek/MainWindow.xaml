@@ -292,24 +292,18 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="0,170,0,0"  Width="302">
-            <StackPanel.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleX="0.552"/>
-                    <RotateTransform/>
-                    <TranslateTransform X="2.32"/>
-                </TransformGroup>
-            </StackPanel.RenderTransform>
-            <Border BorderBrush="Gray" BorderThickness="1">
-                <TextBlock Text="{Binding BiodataResults}" Foreground="White" FontSize="16" Margin="10"/>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Background="#333" CornerRadius="10" Padding="10" Margin="5" Height="400" Width="300">
+                <StackPanel>
+                    <TextBlock Text="Biodata Results" FontWeight="Bold" FontSize="26" Foreground="White"/>
+                    <Separator Background="Gray" Margin="5"/>
+                    <TextBlock Text="{Binding BiodataResults}" TextWrapping="Wrap" Margin="5" FontSize="14" Foreground="WhiteSmoke"/>
+                    <TextBlock Text="{Binding SimilarityPercentage}" FontWeight="Bold" FontSize="20" Foreground="Aqua"/>
+                    <TextBlock Text="{Binding ExecutionTime}" FontWeight="Bold" FontSize="20" Foreground="Aqua"/>
+                </StackPanel>
             </Border>
-            <StackPanel Orientation="Vertical" Height="80">
-                <!-- Bind TextBlock text to properties in the DataContext -->
-                <TextBlock Text="{Binding SimilarityPercentage}" Foreground="White" FontSize="20" FontWeight="Bold" Height="27"/>
-                <TextBlock Text="{Binding ExecutionTime}" Foreground="White" FontSize="20" FontWeight="Bold"/>
-            </StackPanel>
         </StackPanel>
+
         <TextBlock
          HorizontalAlignment="Left"
          Height="61"
@@ -322,8 +316,7 @@
          FontSize="50"
          TextAlignment="Center"
          FontWeight="Bold" Grid.ColumnSpan="3" Margin="213,59,0,0"/>
-
-        <Button x:Name="btnKMP" Template="{DynamicResource ButtonTemplate1}"  Content="KMP" HorizontalAlignment="Left" Margin="355,608,0,0" VerticalAlignment="Top" Height="70" Width="117" Background="#FFE81208" FontSize="30" FontWeight="Bold" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" Click="btnKMP_Click">
+        <Button x:Name="btnBM" Style="{DynamicResource ButtonStyle1}" Content="BM" HorizontalAlignment="Left" Margin="409,610,0,0" VerticalAlignment="Top" Height="70" Width="117" FontSize="30" FontWeight="Bold" RenderTransformOrigin="0.5,0.5" Click="btnBM_Click" Grid.ColumnSpan="2">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -333,7 +326,9 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="btnBM" Style="{DynamicResource ButtonStyle1}" Grid.Column="1" Content="BM" HorizontalAlignment="Left" Margin="46,608,0,0" VerticalAlignment="Top" Height="70" Width="117" FontSize="30" FontWeight="Bold" RenderTransformOrigin="0.5,0.5" Click="btnBM_Click">
+        <Button x:Name="btnInsert" Style="{DynamicResource ButtonStyle2}" Content="Insert Image" HorizontalAlignment="Left" Margin="86,611,0,0" VerticalAlignment="Top" Height="70" Width="172" Background="#FFFF0303" FontSize="22" FontWeight="Bold" Click="OnInsertImage"/>
+        <Button x:Name="btnSearch"  Style="{DynamicResource ButtonStyle3}" Grid.Column="1" Content="Search" HorizontalAlignment="Right" Margin="0,611,88,0" VerticalAlignment="Top" Background="#FFFF0101" Width="120" Height="70" FontSize="30" FontWeight="Bold" Click="OnSearch" RenderTransformOrigin="0.526,-0.154"/>
+        <Button x:Name="btnKMP" Template="{DynamicResource ButtonTemplate1}"  Content="KMP" HorizontalAlignment="Left" Margin="300,610,0,0" VerticalAlignment="Top" Height="70" Width="117" Background="#FFE81208" FontSize="30" FontWeight="Bold" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" Click="btnKMP_Click">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -343,8 +338,14 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="btnInsert" Style="{DynamicResource ButtonStyle2}" Content="Insert Image" HorizontalAlignment="Center" Margin="0,608,0,0" VerticalAlignment="Top" Height="70" Width="172" Background="#FFFF0303" FontSize="22" FontWeight="Bold" Click="OnInsertImage"/>
-        <Button x:Name="btnSearch"  Style="{DynamicResource ButtonStyle3}" Grid.Column="1" Content="Search" HorizontalAlignment="Left" Margin="221,608,0,0" VerticalAlignment="Top" Background="#FFFF0101" Width="120" Height="70" FontSize="30" FontWeight="Bold" Click="OnSearch"/>
+        <Popup Name="loadingPopup" Width="300" Height="100" IsOpen="False" Placement="Center" PlacementTarget="{Binding ElementName=mainGrid}">
+            <Border Background="Black" Opacity="0.8" CornerRadius="10">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Loading..." Foreground="White" FontSize="20" FontWeight="Bold"/>
+                    <ProgressBar IsIndeterminate="True" Width="200" Margin="20"/>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 
 

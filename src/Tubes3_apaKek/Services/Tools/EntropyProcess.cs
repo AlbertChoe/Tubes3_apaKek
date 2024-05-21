@@ -80,21 +80,19 @@ namespace Services.Tools
 
         public static string ImageToAsciiFromUniqueSegmentUsingEntropy(BitmapImage bitmapImage, int segmentWidth = 80)
         {
-            Bitmap bitmap = BitmapImageToBitmap(bitmapImage);  // Convert BitmapImage to Bitmap
-            string binaryString = ImageToBinaryString(bitmap);  // Convert image to binary string
-            int bestStartIndex = FindMostUniqueBinarySegmentUsingEntropy(binaryString, segmentWidth);  // Find unique segment
+            Bitmap bitmap = BitmapImageToBitmap(bitmapImage);  
+            string binaryString = ImageToBinaryString(bitmap);  
+            int bestStartIndex = FindMostUniqueBinarySegmentUsingEntropy(binaryString, segmentWidth);  
 
-            // Extract the most unique binary segment
             string bestSegment = binaryString.Substring(bestStartIndex, segmentWidth);
 
-            // Ensure binary string length is a multiple of 8
             int remainder = bestSegment.Length % 8;
             if (remainder != 0)
             {
                 bestSegment = bestSegment.PadRight(bestSegment.Length + (8 - remainder), '0');
             }
 
-            return BinaryStringToAscii(bestSegment);  // Convert binary to ASCII
+            return BinaryStringToAscii(bestSegment);  
         }
         private static Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)
         {

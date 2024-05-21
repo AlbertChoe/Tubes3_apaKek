@@ -6,13 +6,11 @@ namespace Tubes3_apaKek.Models{
         public float execTime;
 
         public ResultData(){
-            // Initialize default values if needed
             this.algorithm = "default algorithm";
             this.Similarity = 0.0f;
             this.execTime = 0.0f;
         }
 
-        // Parameterized constructor
         public ResultData(Biodata biodata, string algorithm, float similarity, float execTime){
             this.biodata = biodata;
             this.algorithm = algorithm;

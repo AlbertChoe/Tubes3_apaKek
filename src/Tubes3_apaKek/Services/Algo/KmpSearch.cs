@@ -1,6 +1,4 @@
 
-using System.Windows;
-
 namespace Services.Algo{
     public static class KMPSearcher
 {

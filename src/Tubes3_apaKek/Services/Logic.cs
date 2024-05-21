@@ -1,5 +1,4 @@
 using System.Windows.Media.Imaging;
-using MySqlX.XDevAPI.Common;
 using Tubes3_apaKek.Models;
 using Services;
 using Services.Tools;
@@ -9,7 +8,6 @@ using System.Windows.Media;
 using Tubes3_apaKek.DataAccess;
 using Services.Algo;
 using System.IO;
-using Org.BouncyCastle.Asn1.Cms;
 using System.Diagnostics;
 namespace Services
 {
@@ -44,7 +42,7 @@ namespace Services
             try
             {
                 // Write all lines to the specified file
-                File.WriteAllLines(filePath, paths);
+                // File.WriteAllLines(filePath, paths);
                 Console.WriteLine($"Successfully wrote {paths.Count} paths to {filePath}");
             }
             catch (Exception ex)

@@ -1,7 +1,5 @@
 using System.Drawing;
 using System.Text;
-using System.IO;
-using System.Windows.Media.Imaging;
 namespace Services.Tools
 {
     public class Variance

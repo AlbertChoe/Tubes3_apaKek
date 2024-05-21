@@ -1,23 +1,19 @@
-using System;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace Services.Tools{
     public class AlayChecker
 {
     public static bool IsAlayMatch(string kataAlay, string kataAsli)
     {
-        // Create a regex pattern from the original string
         string pattern = BuildRegexPattern(kataAsli);
 
-        // Check if the entire kataAlay string matches the regex pattern
+        // Cek apakah pattern sesuai dengan pattern regex
         if (Regex.IsMatch(kataAlay, pattern, RegexOptions.IgnoreCase))
         {
             return true;
         }
 
-        // You could fall back to the normalization logic if regex fails (optional)
-        return false;  // Or invoke another method here if necessary
+        return false;  
     }
 
     private static string BuildRegexPattern(string original)

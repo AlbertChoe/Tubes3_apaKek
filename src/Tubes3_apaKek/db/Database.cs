@@ -1,10 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using Services.Tools;
-using System;
 using System.Configuration;
-using System.Windows; // Tambahkan ini
+using System.Windows; 
 using Tubes3_apaKek.Models;
-using System.IO;
 
 namespace Tubes3_apaKek.DataAccess
 {
@@ -24,7 +22,7 @@ namespace Tubes3_apaKek.DataAccess
                 try
                 {
                     connection.Open();
-                    MessageBox.Show("Connection to the database was successful!"); // Pastikan menggunakan System.Windows.MessageBox
+                    MessageBox.Show("Connection to the database was successful!"); 
                 }
                 catch (MySqlException ex)
                 {

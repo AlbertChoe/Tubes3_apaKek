@@ -181,11 +181,21 @@ namespace Tubes3_apaKek
         }
 
 
-        private void OnSearch(object sender, RoutedEventArgs e)
+       private async void OnSearch(object sender, RoutedEventArgs e)
         {
+            SetButtonsEnabled(false);
 
-            ResultData result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
+            loadingPopup.IsOpen = true;
 
+            ResultData result = null;
+
+            // Jalankan pencarian di thread terpisah untuk menghindari UI freeze
+            await Task.Run(() =>
+            {
+                result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
+            });
+
+            // Proses hasil pencarian
             if (result != null)
             {
                 Biodata biodata = result.biodata;
@@ -197,6 +207,17 @@ namespace Tubes3_apaKek
             {
                 BiodataResults = "Not Found";
             }
+
+            loadingPopup.IsOpen = false;
+
+            SetButtonsEnabled(true);
+        }
+        private void SetButtonsEnabled(bool isEnabled)
+        {
+            btnInsert.IsEnabled = isEnabled;
+            btnKMP.IsEnabled = isEnabled;
+            btnBM.IsEnabled = isEnabled;
+            btnSearch.IsEnabled = isEnabled;
         }
 
         private void btnKMP_Click(object sender, RoutedEventArgs e)

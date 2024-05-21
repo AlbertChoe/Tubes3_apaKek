@@ -48,7 +48,7 @@ namespace Services.Tools
         public static string BitmapImageToAscii(BitmapImage bitmapImage)
         {
             Bitmap bitmap = BitmapImageToBitmap(bitmapImage);
-            return ImageToAsciiFromUniqueSegment(bitmap, 32);
+            return ImageToAsciiFromUniqueSegment2(bitmap, 64);
         }
 
         private static Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)
@@ -63,7 +63,57 @@ namespace Services.Tools
             }
         }
 
+        public static string ImageToAsciiFromUniqueSegment2(Bitmap image, int segmentWidth = 32)
+        {
+            double[] grayscaleArray = ImageToGrayscaleArray(image);
 
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < grayscaleArray.Length; i++)
+            {
+                int binary = grayscaleArray[i] > 128 ? 1 : 0;
+                sb.Append(binary);
+            }
+
+            int changeCountMax = 0;
+            int bestIndex = 0;
+            for (int j = 0; j <= sb.Length - segmentWidth; j += 8)
+            {
+                int changeCount = CountChange(sb.ToString().Substring(j, segmentWidth));
+                
+                if (changeCount > changeCountMax)
+                {
+                    changeCountMax = changeCount;
+                    bestIndex = j;
+                }
+            }
+
+            string selectedBinary = sb.ToString().Substring(bestIndex, segmentWidth);
+
+            // Ensure binary string length is a multiple of 8
+            int remainder = selectedBinary.Length % 8;
+            if (remainder != 0)
+            {
+                selectedBinary = selectedBinary.PadRight(selectedBinary.Length + (8 - remainder), '0');
+            }
+
+            return BinaryStringToAscii(selectedBinary);
+        }
+
+        public static int CountChange(string binaryString)
+        {
+            int change = 0;
+            char prev = binaryString[0];
+            for (int i = 1; i < binaryString.Length; i++)
+            {
+                if (binaryString[i] != prev)
+                {
+                    change++;
+                }
+                prev = binaryString[i];
+            }
+
+            return change;
+        }
 
 
         private static string BinaryStringToAscii(string binaryString)
@@ -95,60 +145,5 @@ namespace Services.Tools
 
             return grayscaleArray;
         }
-
-        private static int FindMostUniqueSegment(double[] grayscaleArray, int segmentWidth)
-        {
-            double maxVariance = 0;
-            int bestStartIndex = 0;
-            int totalLength = grayscaleArray.Length;
-
-            for (int start = 0; start <= totalLength - segmentWidth; start += segmentWidth)
-            {
-                double[] segment = new ArraySegment<double>(grayscaleArray, start, segmentWidth).ToArray();
-                double variance = CalculateVariance(segment);
-
-                if (variance > maxVariance)
-                {
-                    maxVariance = variance;
-                    bestStartIndex = start;
-                }
-            }
-
-            return bestStartIndex;
-        }
-
-
-
-        private static double CalculateVariance(double[] values)
-        {
-            double mean = values.Average();
-            double variance = values.Sum(v => Math.Pow(v - mean, 2)) / values.Length;
-            return variance;
-        }
-
-        public static string ImageToAsciiFromUniqueSegment(Bitmap image, int segmentWidth = 32)
-        {
-            double[] grayscaleArray = ImageToGrayscaleArray(image);
-            int bestStartIndex = FindMostUniqueSegment(grayscaleArray, segmentWidth);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = bestStartIndex; i < bestStartIndex + segmentWidth; i++)
-            {
-                int binary = grayscaleArray[i] > 128 ? 1 : 0;
-                sb.Append(binary);
-            }
-
-            // Ensure binary string length is a multiple of 8
-            string binaryStr = sb.ToString();
-            int remainder = binaryStr.Length % 8;
-            if (remainder != 0)
-            {
-                binaryStr = binaryStr.PadRight(binaryStr.Length + (8 - remainder), '0');
-            }
-
-            return BinaryStringToAscii(binaryStr);
-        }
-
-
     }
 }

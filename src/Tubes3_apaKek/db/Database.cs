@@ -118,7 +118,7 @@ namespace Tubes3_apaKek.DataAccess
             return alayNames;
         }
 
-        public static Biodata GetBiodataByAlayName(string alayName)
+        public static Biodata GetBiodataByRealName(string realName)
         {
             string matchedName = null;
 
@@ -134,12 +134,11 @@ namespace Tubes3_apaKek.DataAccess
                         {
                             while (reader.Read())
                             {
-                                string realName = reader["nama"].ToString();
-                                File.WriteAllText("new.txt", realName);
+                                string alayName = reader["nama"].ToString();
+
                                 if (AlayChecker.IsAlayMatch(alayName, realName))
                                 {
-                                    File.WriteAllText("new1.txt", realName);
-                                    matchedName = realName;
+                                    matchedName = alayName;
                                     break;
                                 }
                             }

@@ -104,7 +104,7 @@ namespace Tubes3_apaKek
             // Test untuk mendapatkan biodata berdasarkan nama alay
             if (alayNames.Count > 0)
             {
-                var biodata = Database.GetBiodataByAlayName(alayNames[0]); // mengasumsikan alayNames tidak kosong
+                var biodata = Database.GetBiodataByRealName(alayNames[0]); // mengasumsikan alayNames tidak kosong
                 MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Biodata for " + alayNames[0] + ":\n" + biodata?.ToString()); // ToString harus diimplementasikan di Biodata
             }
         }

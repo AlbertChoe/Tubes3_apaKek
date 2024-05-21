@@ -62,18 +62,20 @@ namespace Services
             int match_number = -1;
             foreach (string path in allpaths)
             {
-                File.WriteAllText("text.txt", path);
+                
                 string ascii_text = ImageToAsciiConverter.ImageToAscii(path);
                 match_number = KMPSearcher.KMPSearch(image_ascii, ascii_text);
                 if (match_number != -1)
                 {
-                    string realname = Database.GetRealNameByPath(path);
-                    Biodata data = Database.GetBiodataByAlayName(realname);
+                    string realname = Database.GetRealNameByPath(path); 
+                    Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
-                    return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds);
+                    if(data != null){
+                        return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds);
+                    }
+                    
                 }
             }
-            File.WriteAllText("pat.txt", "INI AKHIR KMP");
             stopwatch.Stop();
             return null;
         }
@@ -92,7 +94,7 @@ namespace Services
                 if (match_number != -1)
                 {
                     string realname = Database.GetRealNameByPath(path);
-                    Biodata data = Database.GetBiodataByAlayName(realname);
+                    Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
                     return new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds);
                 }

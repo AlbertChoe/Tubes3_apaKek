@@ -118,40 +118,42 @@ namespace Tubes3_apaKek.DataAccess
 
         public static Biodata GetBiodataByRealName(string realName)
         {
-            string matchedName = null;
+            string? matchedName = null;
 
-            using (var connection = GetConnection())
+            using var connection = GetConnection();
+            try
             {
-                try
+                connection.Open();
+                var query = "SELECT nama FROM biodata";
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-                    var query = "SELECT nama FROM biodata";
-                    using (var command = new MySqlCommand(query, connection))
+                    using (var reader = command.ExecuteReader())
                     {
-                        using (var reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                string alayName = reader["nama"].ToString();
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                            string alayName = reader["nama"].ToString();
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-                                if (AlayChecker.IsAlayMatch(alayName, realName))
-                                {
-                                    matchedName = alayName;
-                                    break;
-                                }
+#pragma warning disable CS8604 // Possible null reference argument.
+                            if (AlayChecker.IsAlayMatch(alayName, realName))
+                            {
+                                matchedName = alayName;
+                                break;
                             }
+#pragma warning restore CS8604 // Possible null reference argument.
                         }
                     }
+                }
 
-                    if (matchedName != null)
-                    {
-                        return GetBiodataByName(matchedName, connection);
-                    }
-                }
-                catch (MySqlException ex)
+                if (matchedName != null)
                 {
-                    MessageBox.Show("Failed to retrieve biodata: " + ex.Message);
+                    return GetBiodataByName(matchedName, connection);
                 }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Failed to retrieve biodata: " + ex.Message);
             }
 
             return null;
@@ -169,6 +171,7 @@ namespace Tubes3_apaKek.DataAccess
                 {
                     if (reader.Read())
                     {
+#pragma warning disable CS8601 // Possible null reference assignment.
                         biodata = new Biodata
                         {
                             NIK = reader["NIK"].ToString(),
@@ -183,14 +186,11 @@ namespace Tubes3_apaKek.DataAccess
                             Pekerjaan = reader["pekerjaan"].ToString(),
                             Kewarganegaraan = reader["kewarganegaraan"].ToString()
                         };
+#pragma warning restore CS8601 // Possible null reference assignment.
                     }
                 }
             }
-
             return biodata;
         }
-
-
-
     }
 }

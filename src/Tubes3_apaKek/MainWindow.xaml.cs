@@ -16,7 +16,6 @@ using Services;
 using Tubes3_apaKek.Models;
 using System.IO;
 
-
 namespace Tubes3_apaKek
 {
     /// <summary>
@@ -29,6 +28,12 @@ namespace Tubes3_apaKek
         private string _similarityPercentage;
         private string _selectedAlgorithm = "KMP";
         private string _biodataResults;
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = this;
+            // TestDatabaseFunctions();
+        }
         public BitmapImage InputImage
         {
             get => _inputImage;
@@ -74,14 +79,6 @@ namespace Tubes3_apaKek
             }
         }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = this;
-            // TestDatabaseFunctions();
-        }
-
-
         private void TestDatabaseFunctions()
         {
             // Test untuk mendapatkan semua path dari sidik jari
@@ -108,7 +105,6 @@ namespace Tubes3_apaKek
                 MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Biodata for " + alayNames[0] + ":\n" + biodata?.ToString()); // ToString harus diimplementasikan di Biodata
             }
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -163,7 +159,6 @@ namespace Tubes3_apaKek
             }
         }
 
-
         private void OnSelectBM(object sender, RoutedEventArgs e)
         {
             if (((RadioButton)sender).IsChecked == true)
@@ -180,14 +175,13 @@ namespace Tubes3_apaKek
             }
         }
 
-
        private async void OnSearch(object sender, RoutedEventArgs e)
         {
             SetButtonsEnabled(false);
 
             loadingPopup.IsOpen = true;
 
-            ResultData result = null;
+            ResultData? result = null;
 
             // Jalankan pencarian di thread terpisah untuk menghindari UI freeze
             await Task.Run(() =>
@@ -206,6 +200,8 @@ namespace Tubes3_apaKek
             else
             {
                 BiodataResults = "Not Found";
+                SimilarityPercentage = "";
+                ExecutionTime = "";
             }
 
             loadingPopup.IsOpen = false;

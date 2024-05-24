@@ -28,6 +28,7 @@ namespace Tubes3_apaKek
         private string _similarityPercentage;
         private string _selectedAlgorithm = "KMP";
         private string _biodataResults;
+        private BitmapImage _matchedFingerprint;
         public MainWindow()
         {
             InitializeComponent();
@@ -43,6 +44,16 @@ namespace Tubes3_apaKek
                 OnPropertyChanged(nameof(InputImage));
             }
         }
+
+        public BitmapImage MatchedFingerprint
+        {
+            get => _matchedFingerprint;
+            set
+            {
+                _matchedFingerprint = value;
+                OnPropertyChanged(nameof(MatchedFingerprint));  
+}
+
 
         public string ExecutionTime
         {
@@ -175,23 +186,20 @@ namespace Tubes3_apaKek
             }
         }
 
-       private async void OnSearch(object sender, RoutedEventArgs e)
+        private async void OnSearch(object sender, RoutedEventArgs e)
         {
             SetButtonsEnabled(false);
-
             loadingPopup.IsOpen = true;
-
             ResultData? result = null;
 
-            // Jalankan pencarian di thread terpisah untuk menghindari UI freeze
             await Task.Run(() =>
             {
                 result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
             });
 
-            // Proses hasil pencarian
             if (result != null)
             {
+                DisplayMatchedFingerprintImage(result.fingerprintImagePath);
                 Biodata biodata = result.biodata;
                 BiodataResults = $"Nama: {biodata.Nama}\nNIK: {biodata.NIK}\nTempat Lahir: {biodata.TempatLahir}\nTanggal Lahir: {biodata.TanggalLahir.ToShortDateString()}\nJenis Kelamin: {biodata.JenisKelamin}\nGolongan Darah: {biodata.GolonganDarah}\nAlamat: {biodata.Alamat}\nAgama: {biodata.Agama}\nStatus Perkawinan: {biodata.StatusPerkawinan}\nPekerjaan: {biodata.Pekerjaan}\nKewarganegaraan: {biodata.Kewarganegaraan}";
                 ExecutionTime = $"Waktu Pencarian: {result.execTime} ms \nAlgorithm: {result.algorithm}";
@@ -199,15 +207,44 @@ namespace Tubes3_apaKek
             }
             else
             {
-                BiodataResults = "Not Found";
-                SimilarityPercentage = "";
-                ExecutionTime = "";
+                ClearResultsDisplay();
             }
 
             loadingPopup.IsOpen = false;
-
             SetButtonsEnabled(true);
         }
+
+      private void DisplayMatchedFingerprintImage(string relativeImagePath)
+        {
+            try
+            {
+
+                string rootDirectory = Directory.GetCurrentDirectory(); 
+                string fullPath = System.IO.Path.Combine(rootDirectory, relativeImagePath); // Combine the root with the relative image path
+                var uri = new Uri(fullPath, UriKind.Absolute);
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = uri;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                bitmap.Freeze();  // Make the BitmapImage thread-safe
+                MatchedFingerprint = bitmap; 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load matched fingerprint image: {ex.Message}");
+            }
+        }
+
+        private void ClearResultsDisplay()
+        {
+            BiodataResults = "No Results Found";
+            SimilarityPercentage = "";
+            ExecutionTime = "";
+            MatchedFingerprintImage.Source = null;
+        }
+
+
         private void SetButtonsEnabled(bool isEnabled)
         {
             btnInsert.IsEnabled = isEnabled;

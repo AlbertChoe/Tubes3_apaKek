@@ -285,12 +285,21 @@
             </Border>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border BorderBrush="Gray" Background="Gray" BorderThickness="1" Height="394" Width="300">
-                <TextBlock Text="Sidik Jari Cocok" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Style="{DynamicResource StackPanelStyle1}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Border BorderBrush="Gray" Background="Gray" BorderThickness="1" Height="400" Width="280">
+                <Image Style="{DynamicResource ImageStyle1}" x:Name="MatchedFingerprintImage" Source="{Binding MatchedFingerprint}" RenderTransformOrigin="0.5,0.5" Stretch="Fill" OpacityMask="#FF675858" Height="395" Width="279">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform AngleX="-0.01" AngleY="0.011"/>
+                            <RotateTransform Angle="-0.223"/>
+                            <TranslateTransform X="-0.033" Y="0.013"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
             </Border>
-
         </StackPanel>
+
 
         <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Border Background="#333" CornerRadius="10" Padding="10" Margin="5" Height="400" Width="300">

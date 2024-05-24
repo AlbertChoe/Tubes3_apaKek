@@ -18,8 +18,7 @@ namespace Services
             List<string> allpaths = Database.GetAllFingerprintPaths();
 
 
-            // Write all paths to a file
-            WritePathsToFile(allpaths, "pat.txt");
+            // WritePathsToFile(allpaths, "pat.txt");
             ResultData result;
 
             if (allpaths != null && image != null)
@@ -37,12 +36,12 @@ namespace Services
             }
             return null;
         }
+
+
         private static void WritePathsToFile(List<string> paths, string filePath)
         {
             try
             {
-                // Write all lines to the specified file
-                // File.WriteAllLines(filePath, paths);
                 Console.WriteLine($"Successfully wrote {paths.Count} paths to {filePath}");
             }
             catch (Exception ex)
@@ -69,7 +68,7 @@ namespace Services
                     Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
                     if(data != null){
-                        return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds);
+                        return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds,path);
                     }
                     
                 }
@@ -94,7 +93,7 @@ namespace Services
                     string realname = Database.GetRealNameByPath(path);
                     Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
-                    return new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds);
+                    return new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds,path);
                 }
             }
 

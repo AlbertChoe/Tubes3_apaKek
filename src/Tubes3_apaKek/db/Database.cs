@@ -148,7 +148,7 @@ namespace Tubes3_apaKek.DataAccess
 
                 if (matchedName != null)
                 {
-                    return GetBiodataByName(matchedName, connection);
+                    return GetBiodataByName(matchedName,realName, connection);
                 }
             }
             catch (MySqlException ex)
@@ -159,7 +159,7 @@ namespace Tubes3_apaKek.DataAccess
             return null;
         }
 
-        private static Biodata GetBiodataByName(string name, MySqlConnection connection)
+        private static Biodata GetBiodataByName(string name,string realName, MySqlConnection connection)
         {
             Biodata biodata = null;
             var query = "SELECT * FROM biodata WHERE nama = @Name";
@@ -175,7 +175,7 @@ namespace Tubes3_apaKek.DataAccess
                         biodata = new Biodata
                         {
                             NIK = reader["NIK"].ToString(),
-                            Nama = reader["nama"].ToString(),
+                            Nama = realName,
                             TempatLahir = reader["tempat_lahir"].ToString(),
                             TanggalLahir = Convert.ToDateTime(reader["tanggal_lahir"]),
                             JenisKelamin = reader["jenis_kelamin"].ToString(),

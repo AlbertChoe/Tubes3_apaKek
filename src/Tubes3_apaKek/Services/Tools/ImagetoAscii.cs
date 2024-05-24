@@ -38,11 +38,45 @@ namespace Services.Tools
                 return BinaryStringToAscii(binaryStr);
             }
         }
+        public static string ImageToAscii(Bitmap image)
+        {
+
+            using ( image )
+            {
+                StringBuilder sb = new StringBuilder();
+
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        Color pixelColor = image.GetPixel(x, y);
+                        int grayScale = (int)((pixelColor.R * 0.3) + (pixelColor.G * 0.59) + (pixelColor.B * 0.11));
+                        int binary = grayScale > 128 ? 1 : 0;
+                        sb.Append(binary);
+                    }
+                }
+
+                // Ensure binary string length is a multiple of 8
+                string binaryStr = sb.ToString();
+                int remainder = binaryStr.Length % 8;
+                if (remainder != 0)
+                {
+                    binaryStr = binaryStr.PadRight(binaryStr.Length + (8 - remainder), '0');
+                }
+
+                return BinaryStringToAscii(binaryStr);
+            }
+        }
 
         public static string BitmapImageToAscii(BitmapImage bitmapImage)
         {
             Bitmap bitmap = BitmapImageToBitmap(bitmapImage);
             return ImageToAsciiFromUniqueSegment2(bitmap, 64);
+        }
+        public static string BitmapImageToAsciiForLD(BitmapImage bitmapImage)
+        {
+            Bitmap bitmap = BitmapImageToBitmap(bitmapImage);
+            return ImageToAscii(bitmap);
         }
 
         private static Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)

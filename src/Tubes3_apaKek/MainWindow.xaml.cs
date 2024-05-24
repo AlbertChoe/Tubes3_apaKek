@@ -51,8 +51,9 @@ namespace Tubes3_apaKek
             set
             {
                 _matchedFingerprint = value;
-                OnPropertyChanged(nameof(MatchedFingerprint));  
-}
+                OnPropertyChanged(nameof(MatchedFingerprint));
+            }
+        }
 
 
         public string ExecutionTime
@@ -195,6 +196,10 @@ namespace Tubes3_apaKek
             await Task.Run(() =>
             {
                 result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
+                if (result == null)
+                {
+                    result = Logic.LDController(this._inputImage, Database.GetAllFingerprintPaths());
+                }
             });
 
             if (result != null)
@@ -203,7 +208,7 @@ namespace Tubes3_apaKek
                 Biodata biodata = result.biodata;
                 BiodataResults = $"Nama: {biodata.Nama}\nNIK: {biodata.NIK}\nTempat Lahir: {biodata.TempatLahir}\nTanggal Lahir: {biodata.TanggalLahir.ToShortDateString()}\nJenis Kelamin: {biodata.JenisKelamin}\nGolongan Darah: {biodata.GolonganDarah}\nAlamat: {biodata.Alamat}\nAgama: {biodata.Agama}\nStatus Perkawinan: {biodata.StatusPerkawinan}\nPekerjaan: {biodata.Pekerjaan}\nKewarganegaraan: {biodata.Kewarganegaraan}";
                 ExecutionTime = $"Waktu Pencarian: {result.execTime} ms \nAlgorithm: {result.algorithm}";
-                SimilarityPercentage = $"Persentase Kecocokan: {result.Similarity}%";
+                SimilarityPercentage = $"Persentase Kecocokan: {result.Similarity:F2}%";
             }
             else
             {

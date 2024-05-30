@@ -1,7 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using Services.Tools;
 using System.Configuration;
-using System.Windows; 
+using System.Windows;
+using Services.Hash;
 using Tubes3_apaKek.Models;
 
 namespace Tubes3_apaKek.DataAccess
@@ -10,9 +11,23 @@ namespace Tubes3_apaKek.DataAccess
     {
         private static readonly string connectionString = ConfigurationManager.ConnectionStrings["MySqlConnection"].ConnectionString;
 
+
+        private static Blowfish hash;
         public static MySqlConnection GetConnection()
         {
+ 
             return new MySqlConnection(connectionString);
+        }
+
+        public static Blowfish GetHash()
+        {
+            if (hash != null)
+            {
+                return hash;
+            }
+            
+            hash = new Blowfish("aabb09182736ccdd");
+            return hash;
         }
 
         public static void TestConnection()
@@ -35,9 +50,11 @@ namespace Tubes3_apaKek.DataAccess
         {
             List<string> paths = new List<string>();
             using (var connection = GetConnection())
+                
             {
                 try
                 {
+
                     connection.Open();
                     var query = "SELECT berkas_citra FROM sidik_jari";
                     using (var command = new MySqlCommand(query, connection))
@@ -46,7 +63,11 @@ namespace Tubes3_apaKek.DataAccess
                         {
                             while (reader.Read())
                             {
-                                paths.Add(reader["berkas_citra"].ToString());
+                                // Console.WriteLine("Halo4");
+
+                                string citra = GetHash().Decrypt(reader["berkas_citra"].ToString());
+                                // Console.WriteLine(citra);
+                                paths.Add(citra);
                             }
                         }
                     }
@@ -54,6 +75,10 @@ namespace Tubes3_apaKek.DataAccess
                 catch (MySqlException ex)
                 {
                     MessageBox.Show("Failed to retrieve fingerprint paths: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
             return paths;
@@ -70,12 +95,12 @@ namespace Tubes3_apaKek.DataAccess
                     var query = "SELECT nama FROM sidik_jari WHERE berkas_citra = @Path LIMIT 1";
                     using (var command = new MySqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@Path", path);
+                        command.Parameters.AddWithValue("@Path", GetHash().Encrypt(path));
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                realName = reader["nama"].ToString();
+                                realName = GetHash().Decrypt(reader["nama"].ToString());
                             }
                         }
                     }
@@ -103,7 +128,7 @@ namespace Tubes3_apaKek.DataAccess
                         {
                             while (reader.Read())
                             {
-                                alayNames.Add(reader["nama"].ToString());
+                                alayNames.Add(GetHash().Decrypt(reader["nama"].ToString()));
                             }
                         }
                     }
@@ -132,7 +157,7 @@ namespace Tubes3_apaKek.DataAccess
                         while (reader.Read())
                         {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                            string alayName = reader["nama"].ToString();
+                            string alayName = GetHash().Decrypt(reader["nama"].ToString());
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -166,7 +191,7 @@ namespace Tubes3_apaKek.DataAccess
 
             using (var command = new MySqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Name", GetHash().Encrypt(name));
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -174,17 +199,17 @@ namespace Tubes3_apaKek.DataAccess
 #pragma warning disable CS8601 // Possible null reference assignment.
                         biodata = new Biodata
                         {
-                            NIK = reader["NIK"].ToString(),
+                            NIK = GetHash().Decrypt(reader["NIK"].ToString()),
                             Nama = realName,
-                            TempatLahir = reader["tempat_lahir"].ToString(),
+                            TempatLahir = GetHash().Decrypt(reader["tempat_lahir"].ToString()),
                             TanggalLahir = Convert.ToDateTime(reader["tanggal_lahir"]),
                             JenisKelamin = reader["jenis_kelamin"].ToString(),
-                            GolonganDarah = reader["golongan_darah"].ToString(),
-                            Alamat = reader["alamat"].ToString(),
-                            Agama = reader["agama"].ToString(),
+                            GolonganDarah = GetHash().Decrypt(reader["golongan_darah"].ToString()),
+                            Alamat = GetHash().Decrypt(reader["alamat"].ToString()),
+                            Agama = GetHash().Decrypt(reader["agama"].ToString()),
                             StatusPerkawinan = reader["status_perkawinan"].ToString(),
-                            Pekerjaan = reader["pekerjaan"].ToString(),
-                            Kewarganegaraan = reader["kewarganegaraan"].ToString()
+                            Pekerjaan = GetHash().Decrypt(reader["pekerjaan"].ToString()),
+                            Kewarganegaraan = GetHash().Decrypt(reader["kewarganegaraan"].ToString())
                         };
 #pragma warning restore CS8601 // Possible null reference assignment.
                     }

@@ -13,9 +13,10 @@ namespace Services
 {
     public class Logic
     {
-        public static ResultData? Search(string algorithm, BitmapImage image)
+        public static ResultData? Search(string algorithm, BitmapImage image, List<string> allpaths)
         {
-            List<string> allpaths = Database.GetAllFingerprintPaths();
+
+            Console.WriteLine(allpaths[0]);
 
 
             // WritePathsToFile(allpaths, "pat.txt");
@@ -60,11 +61,11 @@ namespace Services
             foreach (string path in allpaths)
             {
                 
-                string ascii_text = ImageToAsciiConverter.ImageToAscii(path);
-                match_number = KMPSearcher.KMPSearch(image_ascii, ascii_text);
+                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+                match_number = KMPSearcher.KMPSearch(image_ascii, asciiText);
                 if (match_number != -1)
                 {
-                    string realname = Database.GetRealNameByPath(path); 
+                    string realname = Database.GetRealNameByPath("../../../"+path); 
                     Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
                     if(data != null){
@@ -86,8 +87,11 @@ namespace Services
             stopwatch.Start();
             foreach (string path in allpaths)
             {
-                string ascii_text = ImageToAsciiConverter.ImageToAscii(path);
-                match_number = BoyerMooreSearch.BMSearch(image_ascii, ascii_text);
+                // Console.WriteLine(File.Exists("../../../../../test/Real/100__M_Left_index_finger.BMP"));
+                // string pathP = Directory.GetCurrentDirectory();
+                // Console.WriteLine(Directory.GetCurrentDirectory());
+                string asciiText = ImageToAsciiConverter.ImageToAscii("../../../"+path);
+                match_number = BoyerMooreSearch.BMSearch(image_ascii, asciiText);
                 if (match_number != -1)
                 {
                     string realname = Database.GetRealNameByPath(path);
@@ -113,8 +117,8 @@ namespace Services
 
             foreach (string path in allpaths)
             {
-                string ascii_text = ImageToAsciiConverter.ImageToAscii(path);
-                double similarity = Services.Algo.LevenshteinDistance.CalculateSimilarity(image_ascii, ascii_text);
+                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+                double similarity = Services.Algo.LevenshteinDistance.CalculateSimilarity(image_ascii, asciiText);
 
                 if (similarity > highestSimilarity)
                 {

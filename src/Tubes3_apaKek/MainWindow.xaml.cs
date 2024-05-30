@@ -15,6 +15,7 @@ using Tubes3_apaKek.DataAccess;
 using Services;
 using Tubes3_apaKek.Models;
 using System.IO;
+using Services.Hash;
 
 namespace Tubes3_apaKek
 {
@@ -189,22 +190,25 @@ namespace Tubes3_apaKek
 
         private async void OnSearch(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Halo");
             SetButtonsEnabled(false);
             loadingPopup.IsOpen = true;
             ResultData? result = null;
+            List<string> allpaths = Database.GetAllFingerprintPaths();
+
 
             await Task.Run(() =>
             {
-                result = Logic.Search(this.SelectedAlgorithm, this._inputImage);
+                result = Logic.Search(this.SelectedAlgorithm, this._inputImage, allpaths);
                 if (result == null)
                 {
-                    result = Logic.LDController(this._inputImage, Database.GetAllFingerprintPaths());
+                    result = Logic.LDController(this._inputImage, allpaths);
                 }
             });
 
             if (result != null)
             {
-                DisplayMatchedFingerprintImage(result.fingerprintImagePath);
+                DisplayMatchedFingerprintImage("../../../"+result.fingerprintImagePath);
                 Biodata biodata = result.biodata;
                 BiodataResults = $"Nama: {biodata.Nama}\nNIK: {biodata.NIK}\nTempat Lahir: {biodata.TempatLahir}\nTanggal Lahir: {biodata.TanggalLahir.ToShortDateString()}\nJenis Kelamin: {biodata.JenisKelamin}\nGolongan Darah: {biodata.GolonganDarah}\nAlamat: {biodata.Alamat}\nAgama: {biodata.Agama}\nStatus Perkawinan: {biodata.StatusPerkawinan}\nPekerjaan: {biodata.Pekerjaan}\nKewarganegaraan: {biodata.Kewarganegaraan}";
                 ExecutionTime = $"Waktu Pencarian: {result.execTime} ms \nAlgorithm: {result.algorithm}";
@@ -267,6 +271,7 @@ namespace Tubes3_apaKek
 
         private void btnBM_Click(object sender, RoutedEventArgs e)
         {
+            // Blowfish.tes();
             btnBM.Background = new SolidColorBrush(Colors.Red);
             btnKMP.Background = new SolidColorBrush(Colors.Gray);
             SelectedAlgorithm = "BM";

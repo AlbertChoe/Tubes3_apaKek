@@ -190,7 +190,6 @@ namespace Tubes3_apaKek
 
         private async void OnSearch(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Halo");
             SetButtonsEnabled(false);
             loadingPopup.IsOpen = true;
             ResultData? result = null;
@@ -208,7 +207,7 @@ namespace Tubes3_apaKek
 
             if (result != null)
             {
-                DisplayMatchedFingerprintImage("../../../"+result.fingerprintImagePath);
+                DisplayMatchedFingerprintImage(result.fingerprintImagePath);
                 Biodata biodata = result.biodata;
                 BiodataResults = $"Nama: {biodata.Nama}\nNIK: {biodata.NIK}\nTempat Lahir: {biodata.TempatLahir}\nTanggal Lahir: {biodata.TanggalLahir.ToShortDateString()}\nJenis Kelamin: {biodata.JenisKelamin}\nGolongan Darah: {biodata.GolonganDarah}\nAlamat: {biodata.Alamat}\nAgama: {biodata.Agama}\nStatus Perkawinan: {biodata.StatusPerkawinan}\nPekerjaan: {biodata.Pekerjaan}\nKewarganegaraan: {biodata.Kewarganegaraan}";
                 ExecutionTime = $"Waktu Pencarian: {result.execTime} ms \nAlgorithm: {result.algorithm}";

@@ -15,9 +15,7 @@ namespace Services
     {
         public static ResultData? Search(string algorithm, BitmapImage image, List<string> allpaths)
         {
-
-            Console.WriteLine(allpaths[0]);
-
+            
 
             // WritePathsToFile(allpaths, "pat.txt");
             ResultData result;
@@ -65,7 +63,7 @@ namespace Services
                 match_number = KMPSearcher.KMPSearch(image_ascii, asciiText);
                 if (match_number != -1)
                 {
-                    string realname = Database.GetRealNameByPath("../../../"+path); 
+                    string realname = Database.GetRealNameByPath(path); 
                     Biodata data = Database.GetBiodataByRealName(realname);
                     stopwatch.Stop();
                     if(data != null){
@@ -90,7 +88,7 @@ namespace Services
                 // Console.WriteLine(File.Exists("../../../../../test/Real/100__M_Left_index_finger.BMP"));
                 // string pathP = Directory.GetCurrentDirectory();
                 // Console.WriteLine(Directory.GetCurrentDirectory());
-                string asciiText = ImageToAsciiConverter.ImageToAscii("../../../"+path);
+                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
                 match_number = BoyerMooreSearch.BMSearch(image_ascii, asciiText);
                 if (match_number != -1)
                 {

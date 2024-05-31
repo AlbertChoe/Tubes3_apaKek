@@ -63,7 +63,6 @@ namespace Tubes3_apaKek.DataAccess
                         {
                             while (reader.Read())
                             {
-                                // Console.WriteLine("Halo4");
 
                                 string citra = GetHash().Decrypt(reader["berkas_citra"].ToString());
                                 // Console.WriteLine(citra);

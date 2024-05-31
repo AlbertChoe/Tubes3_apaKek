@@ -371,7 +371,7 @@ def process_files(directory):
 
     # Dictionary untuk menyimpan nama yang dihasilkan berdasarkan identifier
     name_dict = {}
-    base_path = "../../../../../test/Real"
+    base_path = "../../test/Real"
     for root, dirs, files in os.walk(directory):
         print(f"Checking directory: {root}")
         for filename in files:

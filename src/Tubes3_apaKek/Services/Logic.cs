@@ -15,8 +15,6 @@ namespace Services
     {
         public static ResultData? Search(string algorithm, BitmapImage image, List<string> allpaths)
         {
-            
-
             // WritePathsToFile(allpaths, "pat.txt");
             ResultData result;
 

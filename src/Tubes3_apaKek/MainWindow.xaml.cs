@@ -223,7 +223,7 @@ namespace Tubes3_apaKek
             BiodataResults = "No Results Found";
             SimilarityPercentage = "";
             ExecutionTime = "";
-            MatchedFingerprintImage.Source = null;
+            MatchedFingerprint = null; 
         }
 
 

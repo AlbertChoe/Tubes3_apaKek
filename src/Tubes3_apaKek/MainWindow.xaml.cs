@@ -33,6 +33,7 @@ namespace Tubes3_apaKek
         public MainWindow()
         {
             InitializeComponent();
+            Database.GetAllFingerprintPaths();
             DataContext = this;
             // TestDatabaseFunctions();
         }

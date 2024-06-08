@@ -18,17 +18,17 @@ namespace Services.Tools{
         return blocks;
     }
 
-    public static int FindPatternInBlocks(string pattern, string asciiText, int blockSize)
-    {
-        string[] blocks = DivideIntoBlocks(asciiText, blockSize);
-        for (int i = 0; i < blocks.Length; i++)
-        {
-            if (KMPSearcher.KMPSearch(pattern, blocks[i]) != -1)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
+    // public static int FindPatternInBlocks(string pattern, string asciiText, int blockSize)
+    // {
+    //     string[] blocks = DivideIntoBlocks(asciiText, blockSize);
+    //     for (int i = 0; i < blocks.Length; i++)
+    //     {
+    //         if (KMPSearcher.KMPSearch(pattern, blocks[i]) != -1)
+    //         {
+    //             return i;
+    //         }
+    //     }
+    //     return -1;
+    // }
 }
 }

@@ -1,10 +1,25 @@
 
+using System.Diagnostics;
+using Services.Tools;
+
 namespace Services.Algo{
-    public static class BoyerMooreSearch{
-    public static int BMSearch(string pattern, string text){
+    public class BoyerMooreSearch{
+
+        private Dictionary<char, int> lastOccurrence;
+
+        private string pattern;
+
+        public BoyerMooreSearch(string pattern){
+            lastOccurrence = new Dictionary<char, int>();
+            this.pattern = pattern;
+
+            lastOccurrence = GetLastOccurrenceTable(pattern);
+        }
+
+    public int BMSearch(string text){
+          
         int n = text.Length;
         int m = pattern.Length;
-        Dictionary<char, int> lastOccurrence = GetLastOccurrenceTable(pattern);
 
         int i = m - 1; 
         int j = m - 1; 
@@ -24,16 +39,16 @@ namespace Services.Algo{
                 j = m - 1; 
             }
         }
+            
 
         return -1; 
      }
 
-    public static List<int> BMSearchAll(string pattern, string text)
+    public List<int> BMSearchAll(string text)
     {
         List<int> occurrences = new List<int>();
         int n = text.Length;
         int m = pattern.Length;
-        Dictionary<char, int> lastOccurrence = GetLastOccurrenceTable(pattern);
 
         int i = m - 1;
 
@@ -60,7 +75,7 @@ namespace Services.Algo{
     }
 
 
-    private static Dictionary<char, int> GetLastOccurrenceTable(string pattern)
+    private Dictionary<char, int> GetLastOccurrenceTable(string pattern)
     {
         var lastOccurrence = new Dictionary<char, int>();
         for (int i = 0; i < pattern.Length; i++)

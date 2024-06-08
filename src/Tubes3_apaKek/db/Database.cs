@@ -11,7 +11,7 @@ namespace Tubes3_apaKek.DataAccess
     {
         private static readonly string connectionString = ConfigurationManager.ConnectionStrings["MySqlConnection"].ConnectionString;
 
-
+        private static List<string> allPath = new List<string>();
         private static Blowfish hash;
         public static MySqlConnection GetConnection()
         {
@@ -48,6 +48,9 @@ namespace Tubes3_apaKek.DataAccess
 
         public static List<string> GetAllFingerprintPaths()
         {
+            if (allPath.Count() > 0) {
+                return allPath;
+            }
             List<string> paths = new List<string>();
             using (var connection = GetConnection())
                 
@@ -80,6 +83,8 @@ namespace Tubes3_apaKek.DataAccess
                     connection.Close();
                 }
             }
+
+            allPath = paths;
             return paths;
         }
 
@@ -199,7 +204,7 @@ namespace Tubes3_apaKek.DataAccess
                         biodata = new Biodata
                         {
                             NIK = GetHash().Decrypt(reader["NIK"].ToString()),
-                            Nama = realName,
+                            Nama = realName + " (" + name +")",
                             TempatLahir = GetHash().Decrypt(reader["tempat_lahir"].ToString()),
                             TanggalLahir = Convert.ToDateTime(reader["tanggal_lahir"]),
                             JenisKelamin = reader["jenis_kelamin"].ToString(),

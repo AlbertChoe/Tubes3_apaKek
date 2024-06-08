@@ -1,5 +1,7 @@
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Media.Imaging;
 
@@ -9,12 +11,12 @@ namespace Services.Tools
     {
         private static readonly char[] AsciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
 
-        public static string ImageToAscii(string imagePath)
+        public static string ImageToAscii2(string imagePath)
         {
 
-            using (Bitmap image = new Bitmap(imagePath))
+            using (Bitmap image = new (imagePath))
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new ();
 
                 for (int y = 0; y < image.Height; y++)
                 {
@@ -38,6 +40,68 @@ namespace Services.Tools
                 return BinaryStringToAscii(binaryStr);
             }
         }
+
+        public static string ImageToAscii(string imagePath)
+    {
+
+
+        using (Bitmap image = new (imagePath))
+        {
+            int width = image.Width;
+            int height = image.Height;
+            StringBuilder[] rowBuilders = new StringBuilder[height];
+
+            for (int i = 0; i < height; i++)
+            {
+                rowBuilders[i] = new StringBuilder(width);
+            }
+
+            BitmapData bitmapData = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            int stride = bitmapData.Stride;
+            int bytesPerPixel = Image.GetPixelFormatSize(bitmapData.PixelFormat) / 8;
+            byte[] pixelData = new byte[stride * height];
+            Marshal.Copy(bitmapData.Scan0, pixelData, 0, pixelData.Length);
+            image.UnlockBits(bitmapData);
+
+            ParallelOptions parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = 20
+            };
+
+            Parallel.For(0, height, parallelOptions, y =>
+            {
+                StringBuilder sb = rowBuilders[y];
+                int rowOffset = y * stride;
+                for (int x = 0; x < width; x++)
+                {
+                    int pixelOffset = rowOffset + (x * bytesPerPixel);
+                    byte blue = pixelData[pixelOffset];
+                    byte green = pixelData[pixelOffset + 1];
+                    byte red = pixelData[pixelOffset + 2];
+
+                    int grayScale = (int)((red * 0.3) + (green * 0.59) + (blue * 0.11));
+                    int binary = grayScale > 128 ? 1 : 0;
+                    sb.Append(binary);
+                }
+            });
+
+            StringBuilder binaryStringBuilder = new (width * height);
+            foreach (var sb in rowBuilders)
+            {
+                binaryStringBuilder.Append(sb);
+            }
+
+            // Ensure binary string length is a multiple of 8
+            string binaryStr = binaryStringBuilder.ToString();
+            int remainder = binaryStr.Length % 8;
+            if (remainder != 0)
+            {
+                binaryStr = binaryStr.PadRight(binaryStr.Length + (8 - remainder), '0');
+            }
+
+            return BinaryStringToAscii(binaryStr);
+        }
+    }
         public static string ImageToAscii(Bitmap image)
         {
 

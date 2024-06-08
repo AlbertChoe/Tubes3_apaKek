@@ -1,16 +1,23 @@
 
 namespace Services.Algo{
-    public static class KMPSearcher
+    public class KMPSearcher
 {
-    public static int KMPSearch(string pattern, string text)
+
+        private int[] lps;
+        private int M;
+
+        private string pattern;
+
+        public KMPSearcher(string pattern){
+            this.pattern = pattern;
+            M = pattern.Length;
+            ComputeLPSArray();
+        }
+    public int KMPSearch(string text)
     {
-        int M = pattern.Length;
         int N = text.Length;
 
-        int[] lps = new int[M];
         int j = 0;
-
-        ComputeLPSArray(pattern, M, lps);
 
         int i = 0;
         int result = -1;
@@ -44,8 +51,9 @@ namespace Services.Algo{
         return result;
     }
 
-    private static void ComputeLPSArray(string pattern, int M, int[] lps)
+    private void ComputeLPSArray()
     {
+        lps = new int[M];
         int len = 0;
         int i = 1;
         lps[0] = 0;

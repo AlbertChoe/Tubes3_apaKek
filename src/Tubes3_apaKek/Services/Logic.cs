@@ -9,6 +9,7 @@ using Tubes3_apaKek.DataAccess;
 using Services.Algo;
 using System.IO;
 using System.Diagnostics;
+using System.Data;
 namespace Services
 {
     public class Logic
@@ -49,73 +50,207 @@ namespace Services
 
         public static ResultData? KMPController(BitmapImage image, List<string> allpaths)
         {
-
-            string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
-            int match_number = -1;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            foreach (string path in allpaths)
-            {
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
+            // string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
+            // int match_number = -1;
+            // KMPSearcher kmp = new KMPSearcher(image_ascii);
+            
+            // foreach (string path in allpaths)
+            // {
                 
-                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
-                match_number = KMPSearcher.KMPSearch(image_ascii, asciiText);
-                if (match_number != -1)
-                {
-                    string realname = Database.GetRealNameByPath(path); 
-                    Biodata data = Database.GetBiodataByRealName(realname);
-                    stopwatch.Stop();
-                    if(data != null){
-                        return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds,path);
-                    }
+            //     string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+            //     match_number = kmp.KMPSearch(asciiText);
+            //     if (match_number != -1)
+            //     {
+            //         string realname = Database.GetRealNameByPath(path); 
+            //         Biodata data = Database.GetBiodataByRealName(realname);
+            //         stopwatch.Stop();
+            //         if(data != null){
+            //             return new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds,path);
+            //         }
                     
+            //     }
+            // }
+            // stopwatch.Stop();
+            // return null;
+
+            Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
+        KMPSearcher kmp = new (image_ascii);
+        object lockObj = new();
+        ResultData? result = null;
+
+
+        ParallelOptions parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 20,
+        };
+
+        Parallel.ForEach(allpaths, parallelOptions, (path, state) =>
+        {
+            string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+            int match_number = kmp.KMPSearch(asciiText);
+
+            if (match_number != -1)
+            {
+                lock (lockObj)
+                {
+                    if (result == null)
+                    {
+                        string realname = Database.GetRealNameByPath(path);
+                        Biodata data = Database.GetBiodataByRealName(realname);
+
+                        stopwatch.Stop();
+                        result = new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+                        state.Stop();  // Stop the parallel loop
+                    }
                 }
             }
-            stopwatch.Stop();
-            return null;
+        });
+
+        stopwatch.Stop();
+        return result;
         }
 
         public static ResultData? BMController(BitmapImage image, List<string> allpaths)
         {
 
-            string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
-            int match_number = -1;
+            
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
+            // long time = 0;
+            // string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
+            // int match_number = -1;
+            // BoyerMooreSearch bm = new BoyerMooreSearch(image_ascii);
+            // foreach (string path in allpaths)
+            // {
+            //     // Console.WriteLine(File.Exists("../../../../../test/Real/100__M_Left_index_finger.BMP"));
+            //     // string pathP = Directory.GetCurrentDirectory();
+            //     // Console.WriteLine(Directory.GetCurrentDirectory());
+            //     // stopwatch.Restart();
+            //     string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+
+            //     match_number = bm.BMSearch(asciiText);
+
+
+            //     if (match_number != -1)
+            //     {
+
+            //         string realname = Database.GetRealNameByPath(path);
+            //         Biodata data = Database.GetBiodataByRealName(realname);
+
+            //         stopwatch.Stop();
+            //         return new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds,path);
+            //     }
+            // }
+
+            // stopwatch.Stop();
+            // return null;
+
             Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            foreach (string path in allpaths)
+        stopwatch.Start();
+
+        string image_ascii = ImageToAsciiConverter.BitmapImageToAscii(image);
+        BoyerMooreSearch bm = new (image_ascii);
+        object lockObj = new();
+        ResultData? result = null;
+
+
+        ParallelOptions parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 20,
+        };
+
+        Parallel.ForEach(allpaths, parallelOptions, (path, state) =>
+        {
+            string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+            int match_number = bm.BMSearch(asciiText);
+
+            if (match_number != -1)
             {
-                // Console.WriteLine(File.Exists("../../../../../test/Real/100__M_Left_index_finger.BMP"));
-                // string pathP = Directory.GetCurrentDirectory();
-                // Console.WriteLine(Directory.GetCurrentDirectory());
-                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
-                match_number = BoyerMooreSearch.BMSearch(image_ascii, asciiText);
-                if (match_number != -1)
+                lock (lockObj)
                 {
-                    string realname = Database.GetRealNameByPath(path);
-                    Biodata data = Database.GetBiodataByRealName(realname);
-                    stopwatch.Stop();
-                    return new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds,path);
+                    if (result == null)
+                    {
+                        string realname = Database.GetRealNameByPath(path);
+                        Biodata data = Database.GetBiodataByRealName(realname);
+
+                        stopwatch.Stop();
+                        result = new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+
+                        state.Stop();  // Stop the parallel loop
+                    }
                 }
             }
+        });
 
-            stopwatch.Stop();
-            return null;
+        stopwatch.Stop();
+        return result;
         }
 
         public static ResultData? LDController(BitmapImage image, List<string> allpaths)
         {
 
-            string image_ascii = ImageToAsciiConverter.BitmapImageToAsciiForLD(image);
-            double highestSimilarity = 0;
-            Biodata bestMatch = null;
-            string bestPath = null;
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            // string image_ascii = ImageToAsciiConverter.BitmapImageToAsciiForLD(image);
+            // double highestSimilarity = 0;
+            // Biodata bestMatch = null;
+            // string bestPath = null;
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
 
-            foreach (string path in allpaths)
+            // foreach (string path in allpaths)
+            // {
+            //     string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+            //     double similarity = LevenshteinDistance.CalculateSimilarity(image_ascii, asciiText);
+
+            //     if (similarity > highestSimilarity)
+            //     {
+            //         highestSimilarity = similarity;
+            //         string realname = Database.GetRealNameByPath(path);
+            //         bestMatch = Database.GetBiodataByRealName(realname);
+            //         bestPath = path;
+
+            //         if (similarity == 1.0)
+            //             break;
+            //     }
+            // }
+
+            // stopwatch.Stop();
+
+            // if (bestMatch != null && highestSimilarity*100>50   )
+            // {
+            //     return new ResultData(bestMatch, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
+            // }
+
+            // return null;
+
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        string image_ascii = ImageToAsciiConverter.BitmapImageToAsciiForLD(image);
+        double highestSimilarity = 0;
+        Biodata? bestMatch = null;
+        string? bestPath = null;
+        
+
+        object lockObj = new object();
+        CancellationTokenSource cts = new(); 
+
+        ParallelOptions parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 20,
+            CancellationToken = cts.Token,
+        };
+
+        Parallel.ForEach(allpaths, parallelOptions, (path,state) =>
+        {
+            string asciiText = ImageToAsciiConverter.ImageToAscii(path);
+            double similarity = LevenshteinDistance.CalculateSimilarity(image_ascii, asciiText);
+
+            lock (lockObj)
             {
-                string asciiText = ImageToAsciiConverter.ImageToAscii(path);
-                double similarity = Services.Algo.LevenshteinDistance.CalculateSimilarity(image_ascii, asciiText);
-
                 if (similarity > highestSimilarity)
                 {
                     highestSimilarity = similarity;
@@ -124,18 +259,25 @@ namespace Services
                     bestPath = path;
 
                     if (similarity == 1.0)
-                        break;
+                    {
+                        cts.Cancel();
+                        state.Stop();
+                    }
                 }
             }
+        });
 
+
+        if (bestMatch != null && highestSimilarity * 100 > 50)
+        {
             stopwatch.Stop();
 
-            if (bestMatch != null)
-            {
-                return new ResultData(bestMatch, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
-            }
+            return new ResultData(bestMatch, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
+        }
+        
+        stopwatch.Stop();
 
-            return null;
+        return null;
         }
 
     }

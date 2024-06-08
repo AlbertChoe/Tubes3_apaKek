@@ -93,33 +93,6 @@ namespace Tubes3_apaKek
             }
         }
 
-        private void TestDatabaseFunctions()
-        {
-            // Test untuk mendapatkan semua path dari sidik jari
-            var paths = Database.GetAllFingerprintPaths();
-            // File.WriteAllText("pat.txt", paths[0]);
-            MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Paths:\n" + string.Join("\n", paths));
-
-            // Test untuk mendapatkan nama asli berdasarkan path
-            if (paths.Count > 0)
-            {
-                var realName = Database.GetRealNameByPath(paths[0]); // mengasumsikan paths tidak kosong
-
-                MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Real Name for " + paths[0] + ":\n" + realName);
-            }
-
-            // Test untuk mendapatkan semua nama alay
-            var alayNames = Database.GetAllAlayNames();
-            MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Alay Names:\n" + string.Join("\n", alayNames));
-
-            // Test untuk mendapatkan biodata berdasarkan nama alay
-            if (alayNames.Count > 0)
-            {
-                var biodata = Database.GetBiodataByRealName(alayNames[0]); // mengasumsikan alayNames tidak kosong
-                MessageBox.Show("INI TESTING FUNGSI DOANG DI MAINWINDOWS.XAML.CS\n KLO FUNGSI CONTROLLER DI DATABASE.CS \n" + "Biodata for " + alayNames[0] + ":\n" + biodata?.ToString()); // ToString harus diimplementasikan di Biodata
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)

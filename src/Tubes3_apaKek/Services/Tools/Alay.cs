@@ -6,7 +6,7 @@ namespace Services.Tools{
     public static bool IsAlayMatch(string kataAlay, string kataAsli)
     {
         string pattern = BuildRegexPattern(kataAsli);
-
+            Console.WriteLine(pattern);
         // Cek apakah pattern sesuai dengan pattern regex
         if (Regex.IsMatch(kataAlay, pattern, RegexOptions.IgnoreCase))
         {
@@ -65,25 +65,5 @@ namespace Services.Tools{
         }
         return $"[{char.ToLower(ch)}{char.ToUpper(ch)}]";
     }
-
-
-
-
 }
 }
-
-
-// Penggunaan
-// class Program
-// {
-//     static void Main()
-//     {
-//         string kataAlay = "R.. Cl5t Sdt, S.S5";
-//         string kataAsli = "R.A. Calista Sudiati, S.Sos";
-//         // string kataAlay = "kh. pmN hRYNt, s.T.";
-//         // string kataAsli = "KH. Paiman Haryanto, S.T.";
-
-//         bool result = AlayChecker.IsAlayMatch(kataAlay, kataAsli);
-//         Console.WriteLine(result ? "True" : "False");  // Output harusnya "True"
-//     }
-// }

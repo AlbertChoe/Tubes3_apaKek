@@ -1,7 +1,5 @@
-﻿import os
 import mysql.connector
-from faker import Faker
-import random
+from mysql.connector import Error
 
 
 class Blowfish:
@@ -347,57 +345,102 @@ class Blowfish:
         return bytes_.decode('utf-8')
 
 
-fake_id = Faker('id_ID')
-fake_us = Faker('en_US')
-
-
-def insert_sidik_jari(cursor, nama, sidik_jari_path):
-    # print(f"Inserting: {nama}, Path: {sidik_jari_path}")
-    cursor.execute(
-        "INSERT INTO sidik_jari (berkas_citra, nama) VALUES (%s, %s)", (sidik_jari_path, nama))
-
-
-def process_files(directory):
-    hash = Blowfish()
-    hash.key_generate("aabb09182736ccdd")
-    db_config = {
-        'user': 'root',
-        'password': '1234',  # Ganti dengan password Anda
-        'host': '127.0.0.1',
-        'database': 'tubes3',  # Sesuaikan dengan nama database Anda
-    }
+def encrypt_and_update_table_data():
     try:
-        db = mysql.connector.connect(**db_config)
-        print("Database connection successful")
-    except Exception as e:
-        print(f"Failed to connect to database: {e}")
-        return
+        connection = mysql.connector.connect(
+            host='localhost',
+            database='tubes3',
+            user='root',
+            password='1234'
+        )
 
-    cursor = db.cursor()
+        if connection.is_connected():
+            cursor = connection.cursor(dictionary=True)
+            blowfish = Blowfish()
+            # Replace with your secret key
+            blowfish.key_generate("aabb09182736ccdd")
 
-    # Dictionary untuk menyimpan nama yang dihasilkan berdasarkan identifier
-    name_dict = {}
-    base_path = "../../test/Real"
-    for root, dirs, files in os.walk(directory):
-        print(f"Checking directory: {root}")
-        for filename in files:
-            if filename.lower().endswith(".bmp"):
-                identifier = filename.split('__')[0]
-                if identifier not in name_dict:
-                    fake = random.choice([fake_id, fake_us])
-                    name_dict[identifier] = fake.name()
+            cursor = connection.cursor(dictionary=True)
 
-                nama = name_dict[identifier]
-                sidik_jari_path = os.path.join(base_path, filename)
-                sidik_jari_path = f"{sidik_jari_path.replace(os.sep, '/')}"
-                # print(sidik_jari_path)
-                insert_sidik_jari(cursor, hash.encrypt(
-                    nama), hash.encrypt(sidik_jari_path))
+            # SQL statements to alter tables
+            alter_biodata_queries = [
+                "ALTER TABLE biodata MODIFY COLUMN NIK VARCHAR(32) NOT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN nama VARCHAR(200) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN tempat_lahir VARCHAR(100) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN golongan_darah VARCHAR(10) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN alamat VARCHAR(510) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN agama VARCHAR(100) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN pekerjaan VARCHAR(200) DEFAULT NULL;",
+                "ALTER TABLE biodata MODIFY COLUMN kewarganegaraan VARCHAR(100) DEFAULT NULL;"
+            ]
 
-    db.commit()
-    cursor.close()
-    db.close()
+            alter_sidik_jari_queries = [
+                "ALTER TABLE sidik_jari MODIFY COLUMN nama VARCHAR(200) DEFAULT NULL;"
+            ]
+
+            # Execute the SQL statements for biodata table
+            for query in alter_biodata_queries:
+                cursor.execute(query)
+                connection.commit()
+
+            # Execute the SQL statements for sidik_jari table
+            for query in alter_sidik_jari_queries:
+                cursor.execute(query)
+                connection.commit()
+
+            print("Tables altered successfully.")
+
+            # Read and encrypt data from `biodata` table
+            cursor.execute("SELECT * FROM biodata")
+            biodata_records = cursor.fetchall()
+            for record in biodata_records:
+                encrypted_record = {col: (blowfish.encrypt(val) if col not in ['tanggal_lahir', 'jenis_kelamin', 'status_perkawinan'] else val)
+                                    for col, val in record.items()}
+                update_query = """
+                UPDATE biodata SET nama = %s, tempat_lahir = %s, golongan_darah = %s, alamat = %s, agama = %s, pekerjaan = %s, kewarganegaraan = %s, NIK = %s
+                WHERE NIK = %s
+                """
+                cursor.execute(update_query, (
+                    encrypted_record['nama'],
+                    encrypted_record['tempat_lahir'],
+                    encrypted_record['golongan_darah'],
+                    encrypted_record['alamat'],
+                    encrypted_record['agama'],
+                    encrypted_record['pekerjaan'],
+                    encrypted_record['kewarganegaraan'],
+                    encrypted_record['NIK'],
+                    record.get("NIK")
+                ))
+                connection.commit()
+
+            # Read and encrypt data from `sidik_jari` table
+            cursor.execute("SELECT * FROM sidik_jari")
+            sidik_jari_records = cursor.fetchall()
+            for record in sidik_jari_records:
+                encrypted_record = {col: blowfish.encrypt(val)
+                                    for col, val in record.items()}
+                update_query = """
+                UPDATE sidik_jari SET berkas_citra = %s, nama = %s
+                WHERE berkas_citra = %s 
+                """
+                cursor.execute(update_query, (
+                    encrypted_record['berkas_citra'],
+                    encrypted_record['nama'],
+                    record.get("berkas_citra")
+
+                ))
+                connection.commit()
+
+            print("Data has been encrypted and updated successfully.")
+
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("MySQL connection is closed")
 
 
-if __name__ == '__main__':
-    process_files('./test/Real')
+# Call the function
+encrypt_and_update_table_data()

@@ -39,8 +39,6 @@ namespace Services.Algo{
                 j = m - 1; 
             }
         }
-            
-
         return -1; 
      }
 
@@ -70,7 +68,6 @@ namespace Services.Algo{
                 i += Math.Max(1, j - lastOccurrence.GetValueOrDefault(text[i - (m - 1 - j)], -1));
             }
         }
-
         return occurrences;
     }
 

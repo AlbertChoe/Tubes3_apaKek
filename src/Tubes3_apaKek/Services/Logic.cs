@@ -16,7 +16,6 @@ namespace Services
     {
         public static ResultData? Search(string algorithm, BitmapImage image, List<string> allpaths)
         {
-            // WritePathsToFile(allpaths, "pat.txt");
             ResultData result;
 
             if (allpaths != null && image != null)
@@ -80,7 +79,7 @@ namespace Services
                             Biodata data = Database.GetBiodataByRealName(realname);
 
                             stopwatch.Stop();
-                            result = new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+                            result = new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds, path);
                             state.Stop();  // Stop the parallel loop
                         }
                     }

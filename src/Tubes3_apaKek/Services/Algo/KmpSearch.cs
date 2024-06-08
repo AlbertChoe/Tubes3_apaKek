@@ -2,17 +2,16 @@
 namespace Services.Algo{
     public class KMPSearcher
 {
+    private int[] lps;
+    private int M;
 
-        private int[] lps;
-        private int M;
+    private string pattern;
 
-        private string pattern;
-
-        public KMPSearcher(string pattern){
-            this.pattern = pattern;
-            M = pattern.Length;
-            ComputeLPSArray();
-        }
+    public KMPSearcher(string pattern){
+        this.pattern = pattern;
+        M = pattern.Length;
+        ComputeLPSArray();
+    }
     public int KMPSearch(string text)
     {
         int N = text.Length;

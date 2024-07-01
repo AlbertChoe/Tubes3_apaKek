@@ -79,7 +79,15 @@ namespace Services
                             Biodata data = Database.GetBiodataByRealName(realname);
 
                             stopwatch.Stop();
-                            result = new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds, path);
+                            if (data != null)
+                            {
+                                result = new ResultData(data, "KMP", 100, stopwatch.ElapsedMilliseconds, path);
+                            }
+                            else
+                            {
+                                result = new ResultData(null, "KMP", 100, stopwatch.ElapsedMilliseconds, path);
+
+                            }
                             state.Stop();  // Stop the parallel loop
                         }
                     }
@@ -122,7 +130,16 @@ namespace Services
                             Biodata data = Database.GetBiodataByRealName(realname);
 
                             stopwatch.Stop();
-                            result = new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+                            if (data != null)
+                            {
+                                result = new ResultData(data, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+                            }
+                            else
+                            {
+                                
+                                result = new ResultData(null, "BM", 100, stopwatch.ElapsedMilliseconds, path);
+
+                            }
 
                             state.Stop();  // Stop the parallel loop
                         }
@@ -177,11 +194,24 @@ namespace Services
             });
 
 
-            if (bestMatch != null && highestSimilarity * 100 > 50)
+            if (bestMatch != null)
             {
+                if (highestSimilarity * 100 > 50)
+                {
+                    stopwatch.Stop();
+
+                    return new ResultData(bestMatch, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
+                }
+                
+            }
+            else
+            {
+                
+                
                 stopwatch.Stop();
 
-                return new ResultData(bestMatch, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
+                return new ResultData(null, "Levenshtein", highestSimilarity * 100, stopwatch.ElapsedMilliseconds, bestPath);
+
             }
             
             stopwatch.Stop();
